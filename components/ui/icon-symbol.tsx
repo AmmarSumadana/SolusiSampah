@@ -4,6 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
 type IconSymbolName = keyof typeof MAPPING;
@@ -15,10 +16,15 @@ type IconSymbolName = keyof typeof MAPPING;
  */
 const MAPPING = {
   'house.fill': 'home',
-  'paperplane.fill': 'send',
+  'paperplane.fill': 'paper-plane',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-} as IconMapping;
+  'map.fill': 'map-marked-alt',
+  'map.marker': 'map-marker',
+  'shop.fill': 'shopping-bag',
+  'list.banksampah': 'recycle',
+  'profile.fill': 'user-circle',
+} as const;
 
 /**
  * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
@@ -28,14 +34,21 @@ const MAPPING = {
 export function IconSymbol({
   name,
   size = 24,
-  color,
+  color = 'black',
   style,
 }: {
   name: IconSymbolName;
   size?: number;
-  color: string | OpaqueColorValue;
+  color?: string;
   style?: StyleProp<TextStyle>;
-  weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  return (
+    <FontAwesome5
+      name={MAPPING[name]}
+      size={size}
+      color={color}
+      style={style}
+      solid
+    />
+  );
 }
