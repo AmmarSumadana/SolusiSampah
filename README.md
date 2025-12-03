@@ -1,13 +1,19 @@
 **SOLUSI SAMPAH**
+
 SOLUSI SAMPAH MEMBANTU MEMETAKAN BANK SAMPAH, MEMBANTU PENGOLAHAN SAMPAH HINGGA MENJADI DUIT. APLIKASI INI AKAN BERMANFAAT BAGI PENGGUNA YANG BINGUNG SAMPAH DI RUMAH MAU DIBAWA KEMANA, NAH APLIKASI INI MEMBANTU AGAR SAMPAH TERSEBUT BISA MENJADI DUIT.
+
 **KOMPONEN**
 1. React Native
 2. Leaflet
 3. Firebase
+
 **Sumber Data**
 1. Data Dummy
+
 **Hasil**
 
+<img src="assets/images/Hasil.jpg" width="200" />   <img src="assets/images/Hasil1.jpg" width="200" />
+<img src="assets/images/Hasil2.jpg" width="200" />   <img src="assets/images/Hasil3.jpg" width="200" />
 
 # Welcome to your Expo app 👋
 
