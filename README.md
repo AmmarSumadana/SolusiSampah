@@ -10,7 +10,8 @@ SOLUSI SAMPAH MEMBANTU MEMETAKAN BANK SAMPAH, MEMBANTU PENGOLAHAN SAMPAH HINGGA 
 1. Data Dummy
 
 **Hasil**
-<img src="src/assets/images/Hasil.jpg" width="200" />
+
+<img src="assets/images/Hasil.jpg" width="200" />
 
 
 # Welcome to your Expo app 👋
