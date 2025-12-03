@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Edit Koordinat</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    
+    <style>
+        /* CSS Dasar */
+        html, body, #map {
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
+        }
+
+        /* Marker FA Kustom */
+        .fa-marker-icon {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+        }
+        .fa-marker-icon i {
+            font-size: 32px; 
+            color: #ff0000; /* Warna default pin */
+            text-shadow: 0 1px 1px rgba(0,0,0,0.6);
+            position: relative;
+            top: 2px;
+            left: 0px;
+        }
+        /* Penyesuaian posisi marker FA */
+        .leaflet-marker-icon {
+            margin-left: -12px !important; 
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        // Gunakan satu variabel global untuk marker
+        var marker;
+
+        // Fungsi untuk membuat Ikon FontAwesome Kustom
+        function createFaIcon(iconClass) {
+            return L.divIcon({
+                className: 'fa-marker-icon',
+                html: `<i class="${iconClass}"></i>`,
+                iconSize: [24, 40], 
+                iconAnchor: [12, 40], 
+                popupAnchor: [0, -40] 
+            });
+        }
+        const pinIcon = createFaIcon('fa-solid fa-map-pin');   
+
+        // Inisialisasi Peta
+        const map = L.map("map").setView([-7.7956, 110.3695], 13);
+        
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap"
+        }).addTo(map);
+
+        
+        /**
+         * Mengirim koordinat baru ke React Native (menggunakan format JSON yang sudah ada).
+         * @param {number} lat - Latitude
+         * @param {number} lng - Longitude
+         */
+        function postCoordinateUpdate(lat, lng) {
+            if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({ 
+                    action: 'update_coordinate', 
+                    lat: lat, 
+                    lng: lng 
+                }));
+            } else {
+                console.log(`Update Koordinat: Lat: ${lat} Lng: ${lng} (Simulasi Web)`);
+            }
+        }
+
+
+        /**
+         * Fungsi utama untuk menempatkan marker, mengatur tampilan peta, dan mengirim koordinat.
+         * Ini menggantikan logika 'drag' dan 'initial_marker'.
+         * @param {number} lat - Latitude
+         * @param {number} lng - Longitude
+         * @param {boolean} [centerMap=true] - Apakah peta harus di-center
+         */
+        function placeMarkerAndSendCoords(lat, lng, centerMap = true) {
+            lat = parseFloat(lat);
+            lng = parseFloat(lng);
+            
+            // Hapus marker lama
+            if (marker) map.removeLayer(marker);
+
+            // Tambahkan marker baru (tanpa draggable)
+            marker = L.marker([lat, lng], { 
+                icon: pinIcon 
+            }).addTo(map);
+
+            // Pindah view peta ke marker baru, pertahankan zoom jika ada, jika tidak, gunakan 16
+            if (centerMap) {
+                map.setView([lat, lng], map.getZoom() || 16); 
+            }
+
+            // Kirim koordinat ke RN
+            postCoordinateUpdate(lat.toFixed(6), lng.toFixed(6));
+        }
+
+        // --- Event Listener ---
+
+        // 1. Logika Klik Peta (Seperti map-add.html)
+        map.on('click', function (e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            
+            // Panggil fungsi utama untuk menempatkan marker
+            placeMarkerAndSendCoords(lat, lng);
+        });
+
+        // 2. Logika Menerima Pesan dari React Native (Initial Marker)
+        window.document.addEventListener('message', function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                
+                if (data.action === 'initial_marker' && data.lat && data.lng) {
+                    // Gunakan fungsi utama untuk menempatkan marker awal
+                    placeMarkerAndSendCoords(data.lat, data.lng, true);
+                }
+            } catch(e) {
+                console.error("Error parsing message from React Native:", e);
+            }
+        });
+        
+    </script>
+</body>
+</html>

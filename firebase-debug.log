@@ -1,0 +1,36 @@
+[debug] [2025-11-27T04:35:52.774Z] ----------------------------------------------------------------------
+[debug] [2025-11-27T04:35:52.776Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\polew\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-11-27T04:35:52.776Z] CLI Version:   14.26.0
+[debug] [2025-11-27T04:35:52.776Z] Platform:      win32
+[debug] [2025-11-27T04:35:52.776Z] Node Version:  v22.20.0
+[debug] [2025-11-27T04:35:52.777Z] Time:          Thu Nov 27 2025 11:35:52 GMT+0700 (GMT+07.00)
+[debug] [2025-11-27T04:35:52.777Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\UGM\SEMESTER 5\ProyekPGPBL\SolusiSampah
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+
+[debug] [2025-11-27T04:36:15.494Z] ExitPromptError: User force closed the prompt with SIGINT
+    at Interface.sigint (C:\Users\polew\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\@inquirer\core\dist\commonjs\lib\create-prompt.js:101:37)
+    at Interface.emit (node:events:519:28)
+    at Interface.emit (node:domain:489:12)
+    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1128:18)
+    at ReadStream.onkeypress (node:internal/readline/interface:271:20)
+    at ReadStream.emit (node:events:531:35)
+    at ReadStream.emit (node:domain:489:12)
+    at emitKeys (node:internal/readline/utils:370:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+[error] 
+[error] Error: An unexpected error has occurred.

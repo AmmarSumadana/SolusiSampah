@@ -1,44 +1,287 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Leaflet Map Only</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Bank Sampah</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-  />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    
+    <style>
+        /* CSS Dasar */
+        html, body, #map {
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
+        }
+        
+        /* Gaya PopUp Kustom */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            padding: 0; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            max-width: 280px !important; 
+            width: auto !important; 
+        }
+        .leaflet-popup-content {
+            padding: 0 !important;
+            margin: 0;
+            width: 100%;
+        }
+        .popup-card {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+        .popup-header-icon {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px; 
+            color: #fff;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .popup-icon-symbol {
+            font-size: 28px;
+            line-height: 1;
+            margin-right: 12px;
+        }
+        .popup-header-icon h4 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .popup-body-detail {
+            padding: 10px 15px 15px; 
+        }
+        .popup-type-tag {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .popup-coord {
+            font-size: 11px;
+            color: #888;
+            display: block;
+            margin-bottom: 15px; 
+        }
+        .popup-action-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .popup-action-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-    }
+        /* Warna Kustom PopUp */
+        .bank-popup .popup-header-icon { background-color: #28a745; } 
+        .shop-popup .popup-header-icon { background-color: #007bff; } 
+        .bank-popup .popup-type-tag { background-color: #e6f5ea; color: #1e7e34; }
+        .shop-popup .popup-type-tag { background-color: #e6f5ff; color: #0056b3; }
+        .btn-edit { background-color: #ffc107; color: #333; }
+        .btn-edit:hover { background-color: #e0a800; }
+        .btn-delete { background-color: #dc3545; color: #fff; }
+        .btn-delete:hover { background-color: #c82333; }
 
-    #map {
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
+        /* CSS MARKER FA KUSTOM */
+        .fa-marker-icon {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+        }
+        .fa-marker-icon i {
+            font-size: 32px; 
+            text-shadow: 0 1px 1px rgba(0,0,0,0.6);
+            position: relative;
+            top: 2px;
+            left: 0px;
+        }
+        .icon-bank i { color: #28a745; } 
+        .icon-shop i { color: #007bff; } 
+        .leaflet-marker-icon {
+            margin-left: -12px !important; 
+        }
+    </style>
 </head>
 
 <body>
-  <div id="map"></div>
+    <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
 
-  <script>
-    // Inisialisasi peta — fokus Yogyakarta
-    const map = L.map('map').setView([-7.7956, 110.3695], 13);
+    <script>
+        function createFaIcon(iconClass, colorClass) {
+            return L.divIcon({
+                className: `fa-marker-icon ${colorClass}`,
+                html: `<i class="${iconClass}"></i>`,
+                iconSize: [24, 40], 
+                iconAnchor: [12, 40], 
+                popupAnchor: [0, -40] 
+            });
+        }
 
-    // Tile layer OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-  </script>
+        const bankFaIcon = createFaIcon('fa-solid fa-recycle', 'icon-bank'); 
+        const shopFaIcon = createFaIcon('fa-solid fa-store', 'icon-shop');   
+        const defaultFaIcon = createFaIcon('fa-solid fa-map-pin', '');       
 
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrsvLRqGgNRZF-3uAupeOD5sWzAtq9Udg",
+            authDomain: "solusisampah.firebaseapp.com",
+            databaseURL: "https://solusisampah-default-rtdb.firebaseio.com",
+            projectId: "solusisampah",
+            storageBucket: "solusisampah.firebasestorage.app",
+            messagingSenderId: "734428801724",
+            appId: "1:734428801724:web:734c6c0c54c2ff9b027eb9"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Init Map
+        const map = L.map("map").setView([-7.7956, 110.3695], 12);
+        
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap"
+        }).addTo(map);
+
+        /**
+         * Mengirim pesan aksi ke React Native.
+         * Untuk aksi 'delete', kita tambahkan detail itemName agar RN bisa menampilkan alert yang personal.
+         */
+        function postActionMessage(action, key, itemName = '') {
+            if (window.ReactNativeWebView) {
+                let messageObject = { 
+                    action: action, 
+                    id: key 
+                };
+                
+                // Tambahkan nama item hanya jika aksi delete
+                if (action === 'delete') {
+                    messageObject.name = itemName;
+                }
+
+                // Mengirim pesan ke lingkungan React Native (Aplikasi Seluler)
+                window.ReactNativeWebView.postMessage(JSON.stringify(messageObject));
+            } else {
+                // Fallback untuk browser testing
+                console.log(`Aksi: ${action} ID: ${key} Nama: ${itemName} (Simulasi Web)`);
+                
+                // Konfirmasi Hapus di browser
+                if (action === 'delete') {
+                     if (confirm(`[BROWSER FALLBACK] Apakah Anda yakin ingin menghapus lokasi ${itemName}?`)) {
+                        console.log(`[BROWSER] Menghapus data: ${key}`);
+                     }
+                }
+            }
+        }
+        
+        // --- LOGIKA FETCH MARKER ---
+        let markerGroup = L.layerGroup().addTo(map);
+
+        db.ref("/points").on("value", (snapshot) => {
+            const data = snapshot.val();
+            markerGroup.clearLayers();
+            if (!data) return;
+
+            Object.keys(data).forEach((key) => {
+                const item = data[key];
+                if (!item.coordinates) return;
+
+                const [lat, lng] = item.coordinates.split(",").map(Number);
+                
+                let typeName = "Lokasi Lain";
+                let popupClass = ''; 
+                let iconSymbol = '📍'; 
+                let customIcon = defaultFaIcon; 
+
+                // Tentukan tipe, ikon PopUp, dan ikon Marker Peta
+                if (item.type === 'bank') {
+                    typeName = "Bank Sampah";
+                    popupClass = 'bank-popup';
+                    iconSymbol = '♻️'; 
+                    customIcon = bankFaIcon; 
+                } else if (item.type === 'shop') {
+                    typeName = "Toko Daur Ulang";
+                    popupClass = 'shop-popup';
+                    iconSymbol = '🛍️'; 
+                    customIcon = shopFaIcon; 
+                } 
+
+                const marker = L.marker([lat, lng], { 
+                    icon: customIcon 
+                }); 
+                
+                // Konten PopUp
+                const popupContent = `
+                    <div class="popup-card ${popupClass}">
+                        <div class="popup-header-icon">
+                            <span class="popup-icon-symbol">${iconSymbol}</span>
+                            <h4>${item.name}</h4>
+                        </div>
+                        <div class="popup-body-detail">
+                            <span class="popup-type-tag">${typeName}</span>
+                            <small class="popup-coord">Lat: ${lat.toFixed(5)} | Lng: ${lng.toFixed(5)}</small>
+                            
+                            <div class="popup-action-container">
+                                <a href="#" class="popup-action-btn btn-edit" data-action="edit" data-key="${key}" data-name="${item.name}">
+                                    Edit
+                                </a>
+                                <a href="#" class="popup-action-btn btn-delete" data-action="delete" data-key="${key}" data-name="${item.name}">
+                                    Hapus
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent, {
+                    className: popupClass, 
+                    offset: L.point(0, -40), 
+                    closeButton: true 
+                });
+                
+                // LOGIKA PERBAIKAN TOMBOL: Tambahkan Listener saat PopUp dibuka
+                marker.on('popupopen', function() {
+                    const popup = marker.getPopup().getElement();
+                    
+                    popup.querySelectorAll('.popup-action-btn').forEach(button => {
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault(); 
+                            const action = this.getAttribute('data-action');
+                            const itemKey = this.getAttribute('data-key');
+                            const itemName = this.getAttribute('data-name');
+                            
+                            if (action === 'delete') {
+                                // Kirim aksi 'delete' ke RN. RN akan menampilkan Alert.
+                                postActionMessage('delete', itemKey, itemName);
+                            } else if (action === 'edit') {
+                                // Kirim aksi 'edit' ke RN.
+                                postActionMessage('edit', itemKey);
+                            }
+                            
+                            map.closePopup(); 
+                        });
+                    });
+                });
+
+                markerGroup.addLayer(marker);
+            });
+        });
+    </script>
 </body>
 </html>

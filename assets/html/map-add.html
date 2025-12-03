@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    html, body, #map { height: 100%; margin: 0; padding: 0; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    var map = L.map('map').setView([-7.8, 110.36], 13);
+    var marker;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19
+    }).addTo(map);
+
+    /**
+     * Mengirim koordinat ke React Native melalui postMessage.
+     * Menggunakan prefiks 'COORDS:' untuk identifikasi.
+     * @param {number} lat - Latitude
+     * @param {number} lng - Longitude
+     */
+    function sendCoordsToRN(lat, lng) {
+        // Format koordinat: Lat,Lng
+        const coords = lat + "," + lng;
+        const message = 'COORDS:' + coords;
+
+        if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+            window.ReactNativeWebView.postMessage(message);
+        } else {
+            // Fallback untuk debugging di browser
+            console.log("Koordinat (browser):", message);
+        }
+    }
+
+    /**
+     * Fungsi yang dapat dipanggil dari React Native (melalui injectJavaScript).
+     * Menempatkan marker pada peta dan memposisikan view peta.
+     * @param {number} lat - Latitude
+     * @param {number} lng - Longitude
+     */
+    window.setMarkerAndCenter = function (lat, lng) {
+        lat = parseFloat(lat);
+        lng = parseFloat(lng);
+        
+        // Hapus marker lama
+        if (marker) map.removeLayer(marker);
+
+        // Tambahkan marker baru
+        marker = L.marker([lat, lng]).addTo(map);
+        
+        // Pindah view peta ke marker baru, pertahankan zoom jika ada, jika tidak, gunakan 13
+        map.setView([lat, lng], map.getZoom() || 13); 
+
+        // Kirim koordinat ke RN
+        sendCoordsToRN(lat.toFixed(6), lng.toFixed(6));
+    };
+
+    /**
+     * Fungsi yang dapat dipanggil dari React Native untuk menghapus marker.
+     */
+    window.resetMarker = function () {
+        if (marker) {
+            map.removeLayer(marker);
+            marker = null;
+        }
+        // Kirim pesan reset ke RN
+        if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+            window.ReactNativeWebView.postMessage('RESET');
+        }
+    };
+
+    /**
+     * Event listener ketika peta di-klik.
+     * Menempatkan marker dan mengirim koordinat.
+     */
+    map.on('click', function (e) {
+      var lat = e.latlng.lat;
+      var lng = e.latlng.lng;
+
+      // Panggil fungsi utama untuk menempatkan marker
+      setMarkerAndCenter(lat, lng);
+    });
+  </script>
+</body>
+</html>

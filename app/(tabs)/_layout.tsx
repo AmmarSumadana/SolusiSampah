@@ -12,7 +12,7 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        tabBarButton: HapticTab,
+        tabBarButton: HapticTab, // pastikan HapticTab menerima semua props dari tabBarButton
       }}
     >
       <Tabs.Screen
@@ -21,7 +21,7 @@ export default function TabLayout() {
           title: "Home",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={22} name="house.fill" color={color} />
-          )
+          ),
         }}
       />
 
@@ -31,7 +31,7 @@ export default function TabLayout() {
           title: "Map",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={22} name="map.fill" color={color} />
-          )
+          ),
         }}
       />
 
@@ -41,7 +41,7 @@ export default function TabLayout() {
           title: "Bank",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={22} name="list.banksampah" color={color} />
-          )
+          ),
         }}
       />
 
@@ -51,17 +51,7 @@ export default function TabLayout() {
           title: "Shop",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={22} name="shop.fill" color={color} />
-          )
-        }}
-      />
-
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profil",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={22} name="profile.fill" color={color} />
-          )
+          ),
         }}
       />
     </Tabs>
