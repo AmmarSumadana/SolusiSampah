@@ -11,8 +11,8 @@ SOLUSI SAMPAH MEMBANTU MEMETAKAN BANK SAMPAH, MEMBANTU PENGOLAHAN SAMPAH HINGGA 
 
 **Hasil**
 
-<img src="assets/images/Hasil.jpg" width="200" />
-
+<img src="assets/images/Hasil.jpg" width="200" />   <img src="assets/images/Hasil1.jpg" width="200" />
+<img src="assets/images/Hasil2.jpg" width="200" />   <img src="assets/images/Hasil3.jpg" width="200" />
 
 # Welcome to your Expo app 👋
 
